@@ -11,13 +11,15 @@ const App = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then((response) => {
         setPersons(response.data);
-    }).catch((error) => {
+      })
+      .catch((error) => {
         console.error("Error fetching data:", error);
-    });
-  }, [])
-  
+      });
+  }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
