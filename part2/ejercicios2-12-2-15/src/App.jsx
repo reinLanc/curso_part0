@@ -23,11 +23,38 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const nameExists = persons.some((person) => person.name === newName);
-    if (nameExists) {
-      alert(`${newName} is already exist in the phonebook`);
+    const existingPerson = persons.find((person) => person.name === newName);
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with the new one?`
+      );
+
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+
+        phonebookService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((error) => {
+            console.error("Error updating person:", error);
+            alert(
+              `The person '${existingPerson.name}' was already removed from the server`
+            );
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
+          });
+      }
       return;
     }
+
     const personObject = {
       name: newName,
       number: newNumber,
@@ -42,7 +69,6 @@ const App = () => {
       })
       .catch((error) => console.error("Error adding person:", error));
   };
-
   const deletePerson = (id) => {
     const person = persons.find((p) => p.id === id);
     if (window.confirm(`Delete ${person.name}?`)) {
@@ -54,7 +80,6 @@ const App = () => {
         .catch((error) => console.error("Error deleting person:", error));
     }
   };
-
   const handlePersonChange = (event) => {
     console.log(event.target.value);
     setNewName(event.target.value);
@@ -77,7 +102,6 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter search={search} handleSearchChange={handleSearchChange} />
-      <h1>Add a new</h1>
       <PersonForm
         newName={newName}
         newNumber={newNumber}
