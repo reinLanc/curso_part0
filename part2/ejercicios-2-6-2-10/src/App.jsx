@@ -1,9 +1,12 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas", number: 55 }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: 55 }
+  ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [search, setSearch] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -31,10 +34,23 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  };
+
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().startsWith(search.toLowerCase())
+  );
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with: {""}
+        <input value={search} onChange={handleSearchChange} />
+      </div>
       <form onSubmit={addPerson}>
+        <h1>Add a new</h1>
         <div>
           name: <input value={newName} onChange={handlePersonChange} />
         </div>
@@ -47,7 +63,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {persons.map((person, index) => (
+        {filteredPersons.map((person, index) => (
           <li key={index}>
             {person.name} - {person.number}
           </li>
