@@ -1,11 +1,16 @@
 import { useState } from "react";
 
-const App = (props) => {
+const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
+    const nameExists = persons.some((person) => person.name === newName);
+    if (nameExists) {
+      alert(`${newName} is already exist in the phonebook`);
+      return;
+    }
     const personObject = {
       name: newName,
     };
