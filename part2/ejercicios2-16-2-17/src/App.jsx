@@ -12,7 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
   const [notificationMessage, setNotificationMessage] = useState();
-  const [notificationType, setNotificationType] = useState(); 
+  const [notificationType, setNotificationType] = useState();
 
   useEffect(() => {
     axios;
@@ -22,35 +22,46 @@ const App = () => {
         setPersons(initialPersons);
       })
       .catch((error) => console.error("Error fetching persons:", error));
-      setNotificationType("error");
-      setTimeout(() => setNotificationMessage(null), 5000);
+    setNotificationType("error");
+    setTimeout(() => setNotificationMessage(null), 5000);
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
     const existingPerson = persons.find((person) => person.name === newName);
-  
+
     if (existingPerson) {
-      if (window.confirm(`${newName} is already in the phonebook, replace the old number with the new one?`)) {
+      if (
+        window.confirm(
+          `${newName} is already in the phonebook, replace the old number with the new one?`
+        )
+      ) {
         const updatedPerson = { ...existingPerson, number: newNumber };
-  
+
         phonebookService
           .update(updatedPerson.id, updatedPerson)
           .then((returnedPerson) => {
-            setPersons(persons.map((p) => (p.id !== updatedPerson.id ? p : returnedPerson)));
+            setPersons(
+              persons.map((p) =>
+                p.id !== updatedPerson.id ? p : returnedPerson
+              )
+            );
             setNotificationMessage(`Updated ${returnedPerson.name}'s number`);
             setNotificationType("success");
             setTimeout(() => setNotificationMessage(null), 5000);
           })
           .catch(() => {
-            setNotificationMessage(`Error updating ${updatedPerson.name}`);
+            setNotificationMessage(
+              `Error: Information for '${existingPerson.name}' has already been removed from the server.`
+            );
             setNotificationType("error");
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
             setTimeout(() => setNotificationMessage(null), 5000);
           });
       }
     } else {
       const newPerson = { name: newName, number: newNumber };
-  
+
       phonebookService
         .create(newPerson)
         .then((returnedPerson) => {
@@ -76,13 +87,13 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter((p) => p.id !== id));
-          setNotificationMessage(`Deleted ${person.name}`);
-          setNotificationType("success");
-          setTimeout(() => setNotificationMessage(null), 5000);
         })
         .catch(() => {
-          setNotificationMessage(`Error deleting ${person.name}`);
+          setNotificationMessage(
+            `Error: Could not delete '${person.name}'. It may have already been removed from the server.`
+          );
           setNotificationType("error");
+          setPersons(persons.filter((p) => p.id !== id));
           setTimeout(() => setNotificationMessage(null), 5000);
         });
     }
