@@ -12,7 +12,6 @@ const App = () => {
 
   useEffect(() => {
     if (query) {
-      console.log("fetching countries...");
       axios
         .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
         .then((response) => {

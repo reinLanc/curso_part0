@@ -22,3 +22,31 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Node modules
+node_modules/
+
+# Archivos de configuración locales
+.env
+.env.local
+.env.*.local
+
+# Carpetas de construcción
+/dist
+/build
+
+# Archivos temporales de editores de código
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencias específicas de plataformas
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# Otros archivos y carpetas sensibles
+/.env*  # Para cubrir todos los archivos .env
+
