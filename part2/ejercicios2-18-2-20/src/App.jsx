@@ -12,9 +12,9 @@ const App = () => {
 
   useEffect(() => {
     if (query) {
-      console.log("Fetching countries...");
+      console.log("fetching countries...");
       axios
-        .get("https://studies.cs.helsinki.fi/restcountries/api/all")
+        .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
         .then((response) => {
           const filtered = response.data.filter((country) =>
             country.name.common.toLowerCase().includes(query.toLowerCase())
