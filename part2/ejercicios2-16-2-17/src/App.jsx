@@ -72,10 +72,11 @@ const App = () => {
           setNotificationType("success");
           setTimeout(() => setNotificationMessage(null), 5000);
         })
-        .catch(() => {
-          setNotificationMessage(`Error adding ${newName}`);
+        .catch((error) => {
+          setNotificationMessage(`Error adding ${newName}: ${error.response.data.error}`);
           setNotificationType("error");
           setTimeout(() => setNotificationMessage(null), 5000);
+          console.log(error.response.data.error);
         });
     }
   };
