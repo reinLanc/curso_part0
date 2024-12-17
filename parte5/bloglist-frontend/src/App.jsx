@@ -16,7 +16,9 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService.getAll().then((blogs) => {
+      setBlogs(blogs.sort((a,b) => b.likes - a.likes))
+    })
   }, [])
 
   useEffect(() => {
@@ -66,7 +68,10 @@ const App = () => {
   const updateBlog = async (id, updatedBlog) => {
     try {
       const returnedBlog = await blogService.update(id, updatedBlog)
-      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      setBlogs(blogs
+        .map(blog => blog.id !== id ? blog : returnedBlog)
+        .sort((a, b) => b.likes - a.likes)
+      )
     } catch (error) {
       setErrorMessage('Failed to update likes')
       setTimeout(() => setErrorMessage(null), 5000)
