@@ -7,7 +7,6 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 
 const App = () => {
-  const blogFormRef = useRef()
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -17,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
-      setBlogs(blogs.sort((a,b) => b.likes - a.likes))
+      setBlogs(blogs)
     })
   }, [])
 
@@ -78,6 +77,23 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    const confirmMessage = `Remove blog '${blog.title}' by '${blog.author}'?`
+    if(window.confirm(confirmMessage)) {
+      try {
+        await blogService.deleteBlog(blog.id)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+        setSuccessMessage(`Blog '${blog.title}' removed successfully`)
+        setTimeout(() => setSuccessMessage(null), 5000)
+      } catch (error) {
+        setErrorMessage('Failed to delete blog')
+        setTimeout(() => setErrorMessage(null), 5000)
+      }
+    }
+  }
+
+  const blogFormRef = useRef()
+
   if (user === null) {
     return (
       <div>
@@ -116,8 +132,10 @@ const App = () => {
       <Togglable buttonLabel='Create new blog!' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+      {blogs
+      .sort((a,b) => b.likes - a.likes)
+      .map((blog) => (
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} username={user.username}/>
       ))}
     </div>
   )
