@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
@@ -30,8 +31,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
     deleteBlog(blog)
   }
 
-  const showDeleteButton =
-  blog.user && blog.user[0]?.username === username
+  const showDeleteButton = blog.user && blog.user[0]?.username === username
 
   return (
     <div style={blogStyle}>
@@ -50,7 +50,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
           </p>
           <p>{blog.user[0]?.name}</p>
           {showDeleteButton && (
-            <button onClick={handleDelete} style={{ backgroundColor: "blue" }}>
+            <button onClick={handleDelete} style={{ backgroundColor: 'blue' }}>
               delete
             </button>
           )}
@@ -58,6 +58,12 @@ const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
       )}
     </div>
   )
+}
+
+Blog.propTypes = {
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
 }
 
 export default Blog

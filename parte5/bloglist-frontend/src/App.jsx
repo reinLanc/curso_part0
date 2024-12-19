@@ -5,14 +5,15 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -97,26 +98,15 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
         <Notification message={errorMessage} type="error" />
-        <form onSubmit={handleLogin}>
-          <div>
-            Username:
-            <input
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            Password:
-            <input
-              type="password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
+        <Notification message={successMessage} type="success" />
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
       </div>
     )
   }
@@ -133,13 +123,12 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs
-      .sort((a,b) => b.likes - a.likes)
-      .map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} username={user.username}/>
-      ))}
+        .sort((a,b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} username={user.username}/>
+        ))}
     </div>
   )
 }
 
 export default App
-
