@@ -114,10 +114,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={successMessage} type="success" />
-      <Notification message={errorMessage} type="error" />
+      <Notification  id="success" message={successMessage} type="success" />
+      <Notification id="error" message={errorMessage} type="error" />
       <p>
-        {user.name} logged in <button onClick={handleLogout}>LogOut</button>
+        {user.name} logged in <button id="logout-button" onClick={handleLogout}>LogOut</button>
       </p>
       <Togglable buttonLabel='Create new blog!' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
