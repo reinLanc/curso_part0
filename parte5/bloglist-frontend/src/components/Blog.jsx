@@ -34,7 +34,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
   const showDeleteButton = blog.user && blog.user[0]?.username === username
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div>
         {blog.title} - {blog.author}
         <button onClick={toggleDetails}>
