@@ -1,42 +1,41 @@
+import { useNotification } from '../NotificationContext'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createAnecdote } from '../request'
-import { useNotification } from '../NotificationContext'
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
   const { dispatch } = useNotification()
-  const newAnecdoteMutation = useMutation({
+
+  const createAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
     onSuccess: (newAnecdote) => {
-      const anecdotes = queryClient.getQueryData(['anecdotes'])
-      queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
-      dispatch({ type: 'SHOW', payload: 'Anecdote added successfully!' })
+      queryClient.invalidateQueries(['anecdotes'])
+      dispatch({ type: 'SHOW', payload: `Anecdote "${newAnecdote.content}" added!` })
       setTimeout(() => dispatch({ type: 'HIDE' }), 5000)
     },
     onError: () => {
-      dispatch({
-        type: 'SHOW',
-        payload: 'An error occurred. Anecdote content must be at least 5 characters.',
-      })
+      dispatch({ type: 'SHOW', payload: 'Too short anecdote, must have 5 characters length or more' })
       setTimeout(() => dispatch({ type: 'HIDE' }), 5000)
     },
   })
 
-  const onCreate = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
+    if (content.length < 5) {
+      dispatch({ type: 'SHOW', payload: 'Anecdote must have at least 5 characters!' })
+      setTimeout(() => dispatch({ type: 'HIDE' }), 5000)
+      return
+    }
+    createAnecdoteMutation.mutate({ content, votes: 0 })
     event.target.anecdote.value = ''
-    newAnecdoteMutation.mutate({ content, votes: 0 })
   }
 
   return (
-    <div>
-      <h3>create new</h3>
-      <form onSubmit={onCreate}>
-        <input name='anecdote' />
-        <button type="submit">create</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input name="anecdote" />
+      <button type="submit">Create</button>
+    </form>
   )
 }
 
