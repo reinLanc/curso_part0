@@ -36,14 +36,12 @@ export const useNotification = () => {
   return context
 }
 
-
 export const useNotificationMessage = () => {
-  const valueAndDispatch = useContext(NotificationContext)
-  const dispatch = valueAndDispatch[1]
+  const { dispatch } = useNotification()
   return (payload) => {
-    dispatch({ type: 'SET', payload })
+    dispatch({ type: 'SHOW', payload })
     setTimeout(() => {
-      dispatch({ type: 'CLEAR' })
+      dispatch({ type: 'HIDE' })
     }, 5000)
   }
 }
