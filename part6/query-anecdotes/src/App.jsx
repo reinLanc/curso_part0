@@ -8,7 +8,6 @@ import { useNotification, useNotificationMessage } from './NotificationContext'
 const App = () => {
   const queryClient = useQueryClient()
   const notify = useNotificationMessage()
-  const { dispatch } = useNotification()
   const { data: anecdotes, error, isLoading } = useQuery({
     queryKey: ['anecdotes'],
     queryFn: getAnecdotes,

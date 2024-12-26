@@ -1,6 +1,5 @@
 import { createContext, useContext, useReducer } from 'react'
 
-
 const NotificationContext = createContext()
 
 const notificationReducer = (state, action) => {
@@ -22,6 +21,11 @@ export const NotificationProvider = ( props ) => {
       {props.children}
     </NotificationContext.Provider>
   )
+}
+
+export const useNotificationValue = () => {
+  const [notification] = useContext(NotificationContext)
+  return notification
 }
 
 export const useNotification = () => {

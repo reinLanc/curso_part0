@@ -4,7 +4,6 @@ import { createAnecdote } from '../request'
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
-  const { dispatch } = useNotification()
   const notify = useNotificationMessage()
 
   const createAnecdoteMutation = useMutation({
@@ -14,18 +13,13 @@ const AnecdoteForm = () => {
       notify(`Anecdote "${newAnecdote.content}" added!`)
     },
     onError: (error) => {
-      notify(error.response.data)
+      notify(error.response.data.error)
     },
   })
 
   const handleSubmit = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
-    if (content.length < 5) {
-      dispatch({ type: 'SHOW', payload: 'Anecdote must have at least 5 characters!' })
-      setTimeout(() => dispatch({ type: 'HIDE' }), 5000)
-      return
-    }
     createAnecdoteMutation.mutate({ content, votes: 0 })
     event.target.anecdote.value = ''
   }
