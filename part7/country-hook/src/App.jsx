@@ -26,16 +26,16 @@ const App = () => {
       return
     }
 
-    const fetchCountry = async () => {
-      try {
-        const response = await axios.get(
-          `https://studies.cs.helsinki.fi/restcountries/api/name/${name}`
-        )
-        setCountry({ found: true, data: response.data })
-      } catch (error) {
-        console.error('Error fetching country data:', error.message)
-        setCountry({ found: false })
-      }
+    const fetchCountry = () => {
+      axios
+        .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
+        .then((response) => {
+          setCountry({ found: true, data: response.data })
+        })
+        .catch((error) => {
+          console.error('Error fetching country data:', error.message)
+          setCountry({ found: false })
+        })
     }
 
     fetchCountry()
@@ -82,3 +82,4 @@ const App = () => {
 }
 
 export default App
+
