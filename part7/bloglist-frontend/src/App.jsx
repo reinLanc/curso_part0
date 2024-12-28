@@ -15,6 +15,7 @@ import loginService from './services/login'
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog as createBlogAction } from './reducers/blogReducer'
 import { removeUser, setUser as setUserAction } from './reducers/userReducer'
+import User from './components/User'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -163,6 +164,7 @@ const App = () => {
             }
           />
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
         </Routes>
       </div>
     </Router>
