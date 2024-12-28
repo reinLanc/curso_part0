@@ -7,31 +7,34 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { setNotification } from './reducers/notificationReducer'
+import { showNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog as createBlogAction } from './reducers/blogReducer'
+import { removeUser, setUser as setUserAction } from './reducers/userReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const dispatch = useDispatch()
-  const notification = useSelector((state) => state.notification)
+  const blogs = useSelector((state) => state.blogs)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
-      setBlogs(blogs)
+      dispatch(initializeBlogs(blogs))
     })
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogsAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      dispatch(setUserAction(user))
       blogService.setToken(user.token)
+      dispatch(showNotification('Welcome back!', 'success'))
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -40,45 +43,49 @@ const App = () => {
       window.localStorage.setItem('loggedBlogsAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
+      dispatch(setUserAction(user))
       setUsername('')
       setPassword('')
-      dispatch(setNotification('Login successful', 'success'))
+      dispatch(showNotification('Login successful', 'success'))
     } catch (exception) {
-      dispatch(setNotification('Wrong username or password', 'error'))
+      dispatch(showNotification('Wrong username or password', 'error'))
     }
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogsAppUser')
     setUser(null)
+    dispatch(removeUser())
+    dispatch(showNotification('Logged out successfully', 'success'))
   }
 
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     try {
       const returnedBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(returnedBlog))
+      dispatch(createBlogAction(returnedBlog))
       dispatch(
-        setNotification(
+        showNotification(
           `A new blog "${returnedBlog.title}" by "${returnedBlog.author}" added`,
           'success'
         )
       )
     } catch (error) {
-      dispatch(setNotification('Failed to add blog', 'error'))
+      dispatch(showNotification('Failed to add blog', 'error'))
     }
   }
 
-  const updateBlog = async (id, updatedBlog) => {
+  const updateBlog = async (id, blog) => {
     try {
+      const updatedBlog = { ...blog, likes: blog.likes + 1 }
       const returnedBlog = await blogService.update(id, updatedBlog)
-      setBlogs(
-        blogs
-          .map((blog) => (blog.id !== id ? blog : returnedBlog))
-          .sort((a, b) => b.likes - a.likes)
+      dispatch(
+        initializeBlogs(
+          blogs.map((b) => (b.id === id ? returnedBlog : b))
+        )
       )
     } catch (error) {
-      dispatch(setNotification('Failed to update likes', 'error'))
+      dispatch(showNotification('Failed to update likes', 'error'))
     }
   }
 
@@ -87,15 +94,15 @@ const App = () => {
     if (window.confirm(confirmMessage)) {
       try {
         await blogService.deleteBlog(blog.id)
-        setBlogs(blogs.filter((b) => b.id !== blog.id))
+        dispatch(initializeBlogs(blogs.filter((b) => b.id !== blog.id)))
         dispatch(
-          setNotification(
+          showNotification(
             `Blog '${blog.title}' removed successfully`,
             'success'
           )
         )
       } catch (error) {
-        dispatch(setNotification('Failed to delete blog', 'error'))
+        dispatch(showNotification('Failed to delete blog', 'error'))
       }
     }
   }
@@ -130,7 +137,7 @@ const App = () => {
       <Togglable id="cb" buttonLabel="Create new blog!" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs
+      {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
