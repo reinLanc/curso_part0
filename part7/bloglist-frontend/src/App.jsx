@@ -1,12 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+
 import Blog from './components/Blog'
 import Notification from './components/Notification'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
-import { useDispatch, useSelector } from 'react-redux'
+import Users from './components/Users'
+
+import blogService from './services/blogs'
+import loginService from './services/login'
+
 import { showNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog as createBlogAction } from './reducers/blogReducer'
 import { removeUser, setUser as setUserAction } from './reducers/userReducer'
@@ -18,6 +23,8 @@ const App = () => {
 
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -107,8 +114,6 @@ const App = () => {
     }
   }
 
-  const blogFormRef = useRef()
-
   if (user === null) {
     return (
       <div>
@@ -125,31 +130,44 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
-      <p>
-        {user.name} logged in{' '}
-        <button id="logout" onClick={handleLogout}>
-          LogOut
-        </button>
-      </p>
-      <Togglable id="cb" buttonLabel="Create new blog!" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={updateBlog}
-            deleteBlog={deleteBlog}
-            username={user.username}
+    <Router>
+      <div>
+        <Notification />
+        <h2>blogs</h2>
+        <p>
+          {user.name} logged in{' '}
+          <button id="logout" onClick={handleLogout}>
+            LogOut
+          </button>
+        </p>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <Togglable id="cb" buttonLabel="Create new blog!" ref={blogFormRef}>
+                  <BlogForm createBlog={addBlog} />
+                </Togglable>
+                {[...blogs]
+                  .sort((a, b) => b.likes - a.likes)
+                  .map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      updateBlog={updateBlog}
+                      deleteBlog={deleteBlog}
+                      username={user.username}
+                    />
+                  ))}
+              </div>
+            }
           />
-        ))}
-    </div>
+          <Route path="/users" element={<Users />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
 export default App
+
