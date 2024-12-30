@@ -1,21 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Users from './components/Users'
-
 import blogService from './services/blogs'
 import loginService from './services/login'
-
 import { showNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog as createBlogAction } from './reducers/blogReducer'
+import { initializeBlogs, createBlog as createBlogAction, updateBlog as updateBlogAction, deleteBlog as deleteBlogAction } from './reducers/blogReducer'
 import { removeUser, setUser as setUserAction } from './reducers/userReducer'
 import User from './components/User'
+import BlogDetail from './components/BlogDetail'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -40,7 +38,6 @@ const App = () => {
       setUser(user)
       dispatch(setUserAction(user))
       blogService.setToken(user.token)
-      dispatch(showNotification('Welcome back!', 'success'))
     }
   }, [dispatch])
 
@@ -85,13 +82,8 @@ const App = () => {
 
   const updateBlog = async (id, blog) => {
     try {
-      const updatedBlog = { ...blog, likes: blog.likes + 1 }
-      const returnedBlog = await blogService.update(id, updatedBlog)
-      dispatch(
-        initializeBlogs(
-          blogs.map((b) => (b.id === id ? returnedBlog : b))
-        )
-      )
+      const returnedBlog = await blogService.update(id, blog)
+      dispatch(updateBlogAction(returnedBlog))
     } catch (error) {
       dispatch(showNotification('Failed to update likes', 'error'))
     }
@@ -102,7 +94,7 @@ const App = () => {
     if (window.confirm(confirmMessage)) {
       try {
         await blogService.deleteBlog(blog.id)
-        dispatch(initializeBlogs(blogs.filter((b) => b.id !== blog.id)))
+        dispatch(deleteBlogAction(blog.id))
         dispatch(
           showNotification(
             `Blog '${blog.title}' removed successfully`,
@@ -136,7 +128,7 @@ const App = () => {
         <Notification />
         <h2>blogs</h2>
         <p>
-          {user.name} logged in{' '}
+          {user.name} logged in
           <button id="logout" onClick={handleLogout}>
             LogOut
           </button>
@@ -165,6 +157,7 @@ const App = () => {
           />
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<BlogDetail updateBlog={updateBlog} />} />
         </Routes>
       </div>
     </Router>
