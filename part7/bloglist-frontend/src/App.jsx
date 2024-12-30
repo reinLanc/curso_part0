@@ -14,6 +14,7 @@ import { initializeBlogs, createBlog as createBlogAction, updateBlog as updateBl
 import { removeUser, setUser as setUserAction } from './reducers/userReducer'
 import User from './components/User'
 import BlogDetail from './components/BlogDetail'
+import NavBar from './components/NavBar'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -126,13 +127,8 @@ const App = () => {
     <Router>
       <div>
         <Notification />
-        <h2>blogs</h2>
-        <p>
-          {user.name} logged in
-          <button id="logout" onClick={handleLogout}>
-            LogOut
-          </button>
-        </p>
+        <NavBar user={user} handleLogout={handleLogout}/>
+        <h2>Blogs</h2>
         <Routes>
           <Route
             path="/"
