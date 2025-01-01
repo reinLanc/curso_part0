@@ -1,56 +1,44 @@
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 const Navbar = ({ user, handleLogout }) => {
-  const navbarStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#282c34',
-    color: '#fff',
-  }
-
-  const linkStyle = {
-    color: '#61dafb',
-    textDecoration: 'none',
-    margin: '0 10px',
-  }
-
-  const userStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  }
-
-  const buttonStyle = {
-    padding: '5px 10px',
-    backgroundColor: '#61dafb',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    color: '#000',
-  }
-
   return (
-    <nav style={navbarStyle}>
-      <div>
-        <Link to="/" style={linkStyle}>
-          Blogs
-        </Link>
-        <Link to="/users" style={linkStyle}>
-          Users
-        </Link>
-      </div>
-      {user && (
-        <div style={userStyle}>
-          <span>{user.name} logged in</span>
-          <button id="logout" onClick={handleLogout} style={buttonStyle}>
-            Logout
-          </button>
-        </div>
-      )}
-    </nav>
+    <AppBar position="static" sx={{ marginBottom: 3 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Box>
+          <Button component={Link} to="/" color="inherit">
+            Blogs
+          </Button>
+          <Button component={Link} to="/users" color="inherit">
+            Users
+          </Button>
+        </Box>
+        {user && (
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body1" color="inherit">
+              {user.name} logged in
+            </Typography>
+            <Button
+              id="logout"
+              variant="contained"
+              color="secondary"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   )
+}
+
+Navbar.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }),
+  handleLogout: PropTypes.func.isRequired,
 }
 
 export default Navbar

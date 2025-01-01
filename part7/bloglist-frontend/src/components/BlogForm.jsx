@@ -1,56 +1,67 @@
-import { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import { useField } from '../hooks'
+import { TextField, Button, Box, Typography, Paper } from '@mui/material'
 
 const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const title = useField('text')
+  const author = useField('text')
+  const url = useField('text')
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    createBlog({ title, author, url })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    createBlog({
+      title: title.inputProps.value,
+      author: author.inputProps.value,
+      url: url.inputProps.value,
+    })
+    title.reset()
+    author.reset()
+    url.reset()
   }
 
   return (
-    <div>
-      <h2>Create new blog</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Title:
-          <input
-            type="text"
-            value={title}
-            placeholder="Enter Blog Title"
-            data-testid="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          Author:
-          <input
-            type="text"
-            value={author}
-            placeholder="Enter Blog Author"
-            data-testid="Author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          URL:
-          <input
-            type="text"
-            value={url}
-            placeholder="Enter Blog URL"
-            data-testid="URL"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button id="create" type="submit">Create</button>
-      </form>
-    </div>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 4,
+        mt: 3,
+        borderRadius: 2,
+        backgroundColor: '#f9f9f9',
+      }}
+    >
+      <Typography variant="h5" color="primary" gutterBottom>
+        Create New Blog
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          {...title.inputProps}
+          label="Title"
+          placeholder="Enter Blog Title"
+          fullWidth
+          data-testid="Title"
+        />
+        <TextField
+          {...author.inputProps}
+          label="Author"
+          placeholder="Enter Blog Author"
+          fullWidth
+          data-testid="Author"
+        />
+        <TextField
+          {...url.inputProps}
+          label="URL"
+          placeholder="Enter Blog URL"
+          fullWidth
+          data-testid="URL"
+        />
+        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+          <Button type="submit" variant="contained" color="primary">
+            Create
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   )
 }
 
@@ -59,3 +70,4 @@ BlogForm.propTypes = {
 }
 
 export default BlogForm
+

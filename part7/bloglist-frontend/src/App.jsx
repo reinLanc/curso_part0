@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import ToggleMenu from './components/ToggleMenu'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Users from './components/Users'
@@ -15,6 +15,7 @@ import { removeUser, setUser as setUserAction } from './reducers/userReducer'
 import User from './components/User'
 import BlogDetail from './components/BlogDetail'
 import NavBar from './components/NavBar'
+import { Container, Box, Typography } from '@mui/material'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -110,7 +111,7 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-blue-600">
         <Notification />
         <LoginForm
           username={username}
@@ -125,40 +126,51 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <Notification />
-        <NavBar user={user} handleLogout={handleLogout}/>
-        <h2>Blogs</h2>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div>
-                <Togglable id="cb" buttonLabel="Create new blog!" ref={blogFormRef}>
-                  <BlogForm createBlog={addBlog} />
-                </Togglable>
-                {[...blogs]
-                  .sort((a, b) => b.likes - a.likes)
-                  .map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      updateBlog={updateBlog}
-                      deleteBlog={deleteBlog}
-                      username={user.username}
-                    />
-                  ))}
-              </div>
-            }
-          />
-          <Route path="/users" element={<Users />} />
-          <Route path="/users/:id" element={<User />} />
-          <Route path="/blogs/:id" element={<BlogDetail updateBlog={updateBlog} />} />
-        </Routes>
-      </div>
+      <NavBar user={user} handleLogout={handleLogout} />
+      <Container>
+        <Box my={4}>
+          <Notification />
+          <Typography variant="h4" component="h1" gutterBottom>
+            Blogs Management
+          </Typography>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Box>
+                  <ToggleMenu
+                    buttonLabel="Create new blog!"
+                    ref={blogFormRef}
+                  >
+                    <BlogForm createBlog={addBlog} />
+                  </ToggleMenu>
+                  {[...blogs]
+                    .sort((a, b) => b.likes - a.likes)
+                    .map((blog) => (
+                      <Blog
+                        key={blog.id}
+                        blog={blog}
+                        updateBlog={updateBlog}
+                        deleteBlog={deleteBlog}
+                        username={user.username}
+                      />
+                    ))}
+                </Box>
+              }
+            />
+            <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<User />} />
+            <Route
+              path="/blogs/:id"
+              element={<BlogDetail updateBlog={updateBlog} />}
+            />
+          </Routes>
+        </Box>
+      </Container>
     </Router>
   )
 }
 
 export default App
+
 

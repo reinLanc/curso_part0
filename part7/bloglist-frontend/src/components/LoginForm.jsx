@@ -1,32 +1,69 @@
 import PropTypes from 'prop-types'
+import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material'
 
 const LoginForm = ({ username, password, handleUsernameChange, handlePasswordChange, handleSubmit }) => {
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          username
-          <input
-            data-testid="username"
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(to right, #3b82f6, #2563eb)',
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 4,
+          borderRadius: 2,
+          width: '100%',
+          maxWidth: 400,
+        }}
+      >
+        <Typography variant="h4" color="primary" textAlign="center" gutterBottom>
+          Log In
+        </Typography>
+        <Typography variant="body2" color="textSecondary" textAlign="center" mb={3}>
+          Welcome back! Please enter your credentials.
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            id="username"
+            label="Username"
+            variant="outlined"
             value={username}
-            placeholder="Enter your username"
             onChange={handleUsernameChange}
+            fullWidth
+            data-testid="username"
+            placeholder="Enter your username"
           />
-        </div>
-        <div>
-          password
-          <input
-            data-testid="password"
+          <TextField
+            id="password"
+            label="Password"
+            variant="outlined"
             type="password"
             value={password}
-            placeholder="Enter your password"
             onChange={handlePasswordChange}
+            fullWidth
+            data-testid="password"
+            placeholder="Enter your password"
           />
-        </div>
-        <button id="login" type="submit">login</button>
-      </form>
-    </div>
+          <Button
+            id="login"
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Log In
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   )
 }
 
