@@ -106,6 +106,10 @@ const typeDefs = `
       published: Int!
       genres: [String!]!
     ): Book
+    editAuthor(
+      name: String!,
+      setBornTo: Int!
+    ): Author
   }
   type Author {
     name: String!
@@ -156,8 +160,16 @@ const resolvers = {
         authors.push({ name: args.author, id: uuid() })
       }
       return newBook
-    }
-  }
+    },
+    editAuthor:(_, { name, setBornTo }) => {
+      const author = authors.find((author) => author.name === name)
+
+      if(!author) return null
+
+      author.born = setBornTo
+      return author
+    },
+  },
 }
 
 /*Querys =
@@ -204,6 +216,13 @@ mutation {
   ) {
     title
     author
+  }
+}
+  8-7
+  mutation {
+  editAuthor(name: "Reijo Mäki", setBornTo: 1958) {
+    name
+    born
   }
 }
 */
