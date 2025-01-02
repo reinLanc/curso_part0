@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import userService from '../services/users'
 import { Link } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableHead, TableRow, Typography, Container, Paper } from '@mui/material'
+import PersonIcon from '@mui/icons-material/Person'
 
 const Users = () => {
   const dispatch = useDispatch()
@@ -34,6 +35,7 @@ const Users = () => {
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
+                  <PersonIcon color="action" />
                   <Link to={`/users/${user.id}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
                     {user.name}
                   </Link>

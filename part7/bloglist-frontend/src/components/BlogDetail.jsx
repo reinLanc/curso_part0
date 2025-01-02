@@ -1,10 +1,13 @@
-import { Box, Typography, Button, TextField, List, ListItem, ListItemText, Paper } from '@mui/material'
+import { Box, Typography, Button, TextField, List, ListItem, Paper } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { updateBlog } from '../reducers/blogReducer'
 import blogService from '../services/blogs'
 import { showNotification } from '../reducers/notificationReducer'
 import { useField } from '../hooks'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+import CommentIcon from '@mui/icons-material/Comment'
+import LinkIcon from '@mui/icons-material/Link'
 
 const BlogDetail = () => {
   const { id } = useParams()
@@ -27,6 +30,10 @@ const BlogDetail = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (!comment.inputProps.value.trim()) {
+      dispatch(showNotification('Comment cannot be empty', 'error'))
+      return
+    }
     blogService
       .addComment(id, comment.inputProps.value)
       .then((updatedBlog) => {
@@ -48,6 +55,7 @@ const BlogDetail = () => {
       </Typography>
       <Typography variant="body2" color="textSecondary">
         <a href={blog.url} target="_blank" rel="noopener noreferrer">
+          <LinkIcon />
           {blog.url}
         </a>
       </Typography>
@@ -55,24 +63,22 @@ const BlogDetail = () => {
         <Typography variant="body1" gutterBottom>
           <strong>Likes:</strong> {blog.likes}
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleLike}
-        >
-          Like
+        <Button variant="contained" color="primary" onClick={handleLike}title="Like">
+          <ThumbUpIcon />
         </Button>
       </Box>
       <Typography variant="subtitle1" mt={4}>
         Added by {blog.user[0]?.name}
       </Typography>
       <Typography variant="h6" mt={4}>
-        Comments
+        Comments <CommentIcon />
       </Typography>
       <List>
         {blog.comments.map((comment, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={comment} />
+          <ListItem key={index} sx={{ display: 'list-item',listStyleType: 'disc',pl: 2,gap: 0 }}>
+            <Typography variant="body1" color="textPrimary"sx={{ marginLeft: '-1rem' }} >
+              {comment}
+            </Typography>
           </ListItem>
         ))}
       </List>
@@ -92,3 +98,4 @@ const BlogDetail = () => {
 }
 
 export default BlogDetail
+

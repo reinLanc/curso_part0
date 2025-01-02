@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material'
+import LoginIcon from '@mui/icons-material/Login'
 
 const LoginForm = ({ username, password, handleUsernameChange, handlePasswordChange, handleSubmit }) => {
   return (
@@ -59,7 +60,8 @@ const LoginForm = ({ username, password, handleUsernameChange, handlePasswordCha
             fullWidth
             sx={{ mt: 2 }}
           >
-            Log In
+            <em>Login</em>
+            <LoginIcon/>
           </Button>
         </Box>
       </Paper>

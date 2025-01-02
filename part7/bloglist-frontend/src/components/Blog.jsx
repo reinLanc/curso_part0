@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { Card, CardContent, Typography, Button, Box } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 const Blog = ({ blog, deleteBlog, username }) => {
   const handleDelete = () => {
@@ -33,8 +34,9 @@ const Blog = ({ blog, deleteBlog, username }) => {
             variant="contained"
             color="error"
             sx={{ marginTop: 2 }}
+            title="Delete Blog"
           >
-            Delete
+            <DeleteIcon/>
           </Button>
         )}
       </CardContent>

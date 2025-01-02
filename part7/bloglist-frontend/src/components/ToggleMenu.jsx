@@ -1,6 +1,7 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
 import { Button, Box } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 
 const ToggleMenu = forwardRef((props, refs) => {
   const [visible, setVisible] = useState(false)
@@ -15,7 +16,7 @@ const ToggleMenu = forwardRef((props, refs) => {
     <Box>
       {!visible ? (
         <Button variant="contained" color="primary" onClick={toggleVisibility} sx={{ marginBottom:2 }}>
-          {props.buttonLabel}
+          {props.buttonLabel} <AddIcon/>
         </Button>
       ) : (
         <Box sx={{ mt: 3 }}>

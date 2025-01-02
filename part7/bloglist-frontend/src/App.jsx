@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import Blog from './components/Blog'
 import Notification from './components/Notification'
-import ToggleMenu from './components/ToggleMenu'
-import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
+import BlogPage from './components/BlogPage'
 import Users from './components/Users'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -72,11 +70,7 @@ const App = () => {
       const returnedBlog = await blogService.create(blogObject)
       dispatch(createBlogAction(returnedBlog))
       dispatch(
-        showNotification(
-          `A new blog "${returnedBlog.title}" by "${returnedBlog.author}" added`,
-          'success'
-        )
-      )
+        showNotification(`A new blog "${returnedBlog.title}" by "${returnedBlog.author}" added`,'success'))
     } catch (error) {
       dispatch(showNotification('Failed to add blog', 'error'))
     }
@@ -97,12 +91,7 @@ const App = () => {
       try {
         await blogService.deleteBlog(blog.id)
         dispatch(deleteBlogAction(blog.id))
-        dispatch(
-          showNotification(
-            `Blog '${blog.title}' removed successfully`,
-            'success'
-          )
-        )
+        dispatch(showNotification(`Blog '${blog.title}' removed successfully`,'success'))
       } catch (error) {
         dispatch(showNotification('Failed to delete blog', 'error'))
       }
@@ -134,36 +123,16 @@ const App = () => {
             Blogs Management
           </Typography>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Box>
-                  <ToggleMenu
-                    buttonLabel="Create new blog!"
-                    ref={blogFormRef}
-                  >
-                    <BlogForm createBlog={addBlog} />
-                  </ToggleMenu>
-                  {[...blogs]
-                    .sort((a, b) => b.likes - a.likes)
-                    .map((blog) => (
-                      <Blog
-                        key={blog.id}
-                        blog={blog}
-                        updateBlog={updateBlog}
-                        deleteBlog={deleteBlog}
-                        username={user.username}
-                      />
-                    ))}
-                </Box>
-              }
-            />
+            <Route path="/" element={<BlogPage
+              blogs={blogs}
+              user={user}
+              blogFormRef={blogFormRef}
+              addBlog={addBlog}
+              updateBlog={updateBlog}
+              deleteBlog={deleteBlog}/>}/>
             <Route path="/users" element={<Users />} />
             <Route path="/users/:id" element={<User />} />
-            <Route
-              path="/blogs/:id"
-              element={<BlogDetail updateBlog={updateBlog} />}
-            />
+            <Route path="/blogs/:id" element={<BlogDetail updateBlog={updateBlog} />}/>
           </Routes>
         </Box>
       </Container>

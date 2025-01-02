@@ -2,14 +2,24 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useField } from '../hooks'
 import { TextField, Button, Box, Typography, Paper } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { showNotification } from '../reducers/notificationReducer'
 
 const BlogForm = ({ createBlog }) => {
   const title = useField('text')
   const author = useField('text')
   const url = useField('text')
+  const dispatch = useDispatch()
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (!title.inputProps.value.trim() ||
+        !author.inputProps.value.trim() ||
+        !url.inputProps.value.trim()) {
+      dispatch(showNotification('All fields (Title, Author, URL) are required', 'error'))
+      return
+    }
+
     createBlog({
       title: title.inputProps.value,
       author: author.inputProps.value,

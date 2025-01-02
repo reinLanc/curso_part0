@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import userService from '../services/users'
-import { Container, Typography, Paper, List, ListItem, ListItemText } from '@mui/material'
+import { Container, Typography, Paper, List, ListItem } from '@mui/material'
 
 const User = () => {
   const { id } = useParams()
@@ -41,8 +41,22 @@ const User = () => {
         ) : (
           <List>
             {user.blogs.map((blog) => (
-              <ListItem key={blog.id}>
-                <ListItemText primary={blog.title} />
+              <ListItem
+                key={blog.id}
+                sx={{
+                  display: 'list-item',
+                  listStyleType: 'disc',
+                  pl: 2,
+                  gap: 0,
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  color="textPrimary"
+                  sx={{ marginLeft: '-1rem' }}
+                >
+                  {blog.title}
+                </Typography>
               </ListItem>
             ))}
           </List>
@@ -53,3 +67,4 @@ const User = () => {
 }
 
 export default User
+
