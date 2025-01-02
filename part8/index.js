@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { v4: uuid } = require('uuid')
 
 let authors = [
   {
@@ -98,6 +99,14 @@ let books = [
 */
 
 const typeDefs = `
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+  }
   type Author {
     name: String!
     born: Int
@@ -137,8 +146,68 @@ const resolvers = {
         ...author,
         bookCount: books.filter((book) => book.author === author.name).length,
       })),
+  },
+  Mutation: {
+    addBook: (_, args) => {
+      const newBook = { ...args, id: uuid() }
+      books.push(newBook)
+
+      if(!authors.find((author) => author.name === args.author)) {
+        authors.push({ name: args.author, id: uuid() })
+      }
+      return newBook
+    }
   }
 }
+
+/*Querys =
+8-1
+query {
+  bookCount
+  authorCount
+}
+8-2
+query {
+  allBooks {
+    title
+    author
+    published
+    genres
+  }
+}
+8-3
+query {
+  allAuthors {
+    name
+    bookCount
+  }
+}
+8-4 & 8-5
+query {
+  allBooks(author: "Robert Martin") {
+    title
+  }
+}
+query {
+  allBooks(genre: "refactoring") {
+    title
+    author
+  }
+}
+8-6
+mutation {
+  addBook(
+    title: "NoSQL Distilled",
+    author: "Martin Fowler",
+    published: 2012,
+    genres: ["database", "nosql"]
+  ) {
+    title
+    author
+  }
+}
+*/
+
 
 const server = new ApolloServer({
   typeDefs,
