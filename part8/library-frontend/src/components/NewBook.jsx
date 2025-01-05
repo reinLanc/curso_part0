@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries'
+import { ADD_BOOK, ALL_AUTHORS } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -10,8 +10,28 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-    onError: (error) => console.error(error)
+    update: (cache, { data: { addBook } }) => {
+      if (addBook.genres.includes(genre)) {
+        cache.modify({
+          fields: {
+            allBooks(existingBooks = []) {
+              return [...existingBooks, addBook]
+            },
+          },
+        })
+      }
+    },
+    refetchQueries: [{ query: ALL_AUTHORS }],
+    onError: (error) => {
+      console.error('Error adding book:', error.message)
+    },
+    onCompleted: () => {
+      setTitle('')
+      setAuthor('')
+      setPublished('')
+      setGenres([])
+      props.setPage('books')
+    },
   })
 
   if (!props.show) {
@@ -20,24 +40,34 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
-    await addBook({
-      variables: {
-        title,
-        author,
-        published: parseInt(published, 10),
-        genres,
-      },
-    })
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
+
+    const validPublished = parseInt(published, 10)
+    if (!title || !author || isNaN(validPublished) || genres.length === 0) {
+      console.error('Invalid input data')
+      return
+    }
+    try {
+      await addBook({
+        variables: { title, author, published: validPublished, genres },
+      })
+    } catch (error) {
+      console.error('Error while submitting:', error.message)
+    }
+  }
+
+  const handleGenreChange = (event) => {
+    setGenre(event.target.value)
+  }
+
+  const handleAddGenre = () => {
+    if (genre && !genres.includes(genre)) {
+      setGenres([...genres, genre])
+    }
     setGenre('')
   }
 
-  const addGenre = () => {
-    setGenres(genres.concat(genre))
-    setGenre('')
+  if (!props.token) {
+    return <p>Please log in to add a book.</p>
   }
 
   return (
@@ -46,6 +76,7 @@ const NewBook = (props) => {
         <div>
           title
           <input
+            type="text"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
@@ -53,6 +84,7 @@ const NewBook = (props) => {
         <div>
           author
           <input
+            type="text"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
@@ -66,15 +98,13 @@ const NewBook = (props) => {
           />
         </div>
         <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
-          <button onClick={addGenre} type="button">
-            add genre
+          genre
+          <input value={genre} onChange={handleGenreChange} />
+          <button type="button" onClick={handleAddGenre}>
+            Add genre
           </button>
         </div>
-        <div>genres: {genres.join(' ')}</div>
+        <div>genres: {genres.join(', ')}</div>
         <button type="submit">create book</button>
       </form>
     </div>

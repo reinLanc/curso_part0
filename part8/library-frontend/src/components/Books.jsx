@@ -1,34 +1,79 @@
 import { useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
+import { useState, useEffect } from 'react'
 
 const Books = (props) => {
-  const { loading, error, data } = useQuery(ALL_BOOKS)
+  const [genre, setGenre] = useState('')
+  const [allGenres, setAllGenres] = useState([])
+  const [books, setBooks] = useState([])
+
+  const { loading, error, data, refetch } = useQuery(ALL_BOOKS, {
+    variables: { genre },
+  })
+
+  const { data: initialData, loading: initialLoading } = useQuery(ALL_BOOKS, {
+    variables: { genre: '' },
+  })
+
+  useEffect(() => {
+    if (initialData) {
+      const genres = Array.from(
+        new Set(initialData.allBooks.flatMap((book) => book.genres))
+      )
+      setAllGenres(genres)
+    }
+  }, [initialData])
+
+  useEffect(() => {
+    if (data) {
+      setBooks(data.allBooks)
+    }
+  }, [data])
 
   if (!props.show) {
     return null
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading || initialLoading) return <div>Loading...</div>
   if (error) return <div>Error fetching books</div>
 
-  const books = data.allBooks
+  const handleGenreChange = (event) => {
+    setGenre(event.target.value)
+    if (event.target.value) {
+      refetch({ genre: event.target.value })
+    }
+  }
 
   return (
     <div>
-      <h2>books</h2>
-
+      <h2>Books</h2>
+      <div>
+        <label>Filter by genre:</label>
+        <select onChange={handleGenreChange} value={genre}>
+          <option value="">All genres</option>
+          {allGenres.map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
+      </div>
       <table>
-        <tbody>
+        <thead>
           <tr>
-            <th></th>
-            <th>author</th>
-            <th>published</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Published</th>
+            <th>Genres</th>
           </tr>
-          {books.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author}</td>
-              <td>{a.published}</td>
+        </thead>
+        <tbody>
+          {books.map((book) => (
+            <tr key={book.title}>
+              <td>{book.title}</td>
+              <td>{book.author.name}</td>
+              <td>{book.published}</td>
+              <td>{book.genres ? book.genres.join(', ') : 'None'}</td>
             </tr>
           ))}
         </tbody>
@@ -38,3 +83,6 @@ const Books = (props) => {
 }
 
 export default Books
+
+
+
