@@ -3,28 +3,24 @@ import { ALL_BOOKS, BOOK_ADDED } from '../queries'
 import { useState, useEffect } from 'react'
 
 const Books = (props) => {
-  // Manejo de subscripción para libros añadidos
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
       window.alert(`New book added: ${data.bookAdded.title}`)
     },
   })
 
-  const [genre, setGenre] = useState('') // Género seleccionado
-  const [allGenres, setAllGenres] = useState([]) // Lista de géneros únicos
-  const [books, setBooks] = useState([]) // Libros a mostrar
+  const [genre, setGenre] = useState('')
+  const [allGenres, setAllGenres] = useState([])
+  const [books, setBooks] = useState([])
 
-  // Consulta para libros filtrados por género
   const { loading, error, data, refetch } = useQuery(ALL_BOOKS, {
     variables: { genre },
   })
 
-  // Consulta inicial para obtener todos los libros y géneros
   const { data: initialData, loading: initialLoading } = useQuery(ALL_BOOKS, {
     variables: { genre: '' },
   })
 
-  // Procesa géneros únicos al cargar datos iniciales
   useEffect(() => {
     if (initialData) {
       const genres = Array.from(
@@ -34,7 +30,6 @@ const Books = (props) => {
     }
   }, [initialData])
 
-  // Actualiza los libros cuando cambia la consulta
   useEffect(() => {
     if (data) {
       setBooks(data.allBooks)
