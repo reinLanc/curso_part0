@@ -15,11 +15,11 @@ export default [
     },
     rules: {
       "@/semi": ["error"],
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/restrict-template-expressions": "off",
-      "@typescript-eslint/restrict-plus-operands": "off",
-      "@typescript-eslint/no-unused-vars": [
+      "@/explicit-function-return-type": "off",
+      "@/explicit-module-boundary-types": "off",
+      "@/restrict-template-expressions": "off",
+      "@/restrict-plus-operands": "off",
+      "@/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
       ],
