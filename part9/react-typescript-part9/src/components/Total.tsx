@@ -1,7 +1,11 @@
-import { TotalProps } from "../interfaces/total";
+import { TotalProps } from '../interfaces/total';
 
 const Total = ({total}: TotalProps) => {
-  return <p>Number of exercises: {total}</p>;
+  return (
+    <p>
+      <strong>Number of exercises {total}</strong>
+    </p>
+  );
 };
 
 export default Total;

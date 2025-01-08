@@ -1,4 +1,4 @@
-import { HeaderProps } from "../interfaces/header";
+import { HeaderProps } from '../interfaces/header';
 
 
 const Header = ({name}:HeaderProps) => {

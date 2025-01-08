@@ -1,13 +1,15 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import parser from '@typescript-eslint/parser'
-import eslintPluginTypeScript from '@typescript-eslint/eslint-plugin'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import parser from '@typescript-eslint/parser';
+import eslintPluginTypeScript from '@typescript-eslint/eslint-plugin';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules/**', 'build/**', 'dist/**', '*.min.js', 'coverage/**'] },
+  {
+    ignores: ['dist', 'node_modules/**', 'build/**', 'dist/**', '*.min.js', 'coverage/**'],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -27,7 +29,8 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      '@/semi': ['error'],
+      '@/semi': ['error', 'always'],
+      '@/quotes': ['error', 'single'],
       '@/explicit-function-return-type': 'off',
       '@/explicit-module-boundary-types': 'off',
       '@/restrict-template-expressions': 'off',
@@ -37,6 +40,8 @@ export default tseslint.config(
         { argsIgnorePattern: '^_' },
       ],
       'no-case-declarations': 'off',
+      indent: ['error', 2], 
+      'linebreak-style': ['error', 'windows'],
     },
     settings: {
       env: {
@@ -45,5 +50,5 @@ export default tseslint.config(
       },
     },
   },
-)
+);
 
