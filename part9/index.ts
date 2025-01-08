@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { calculateBmi } from "./exercises/bmiCalculator";
-import { calculateExercises, ExerciseResult } from "./exercises/exerciseCalculator";
+import { calculateExercises } from "./exercises/exerciseCalculator";
 const express = require('express');
 const app = express();
 
@@ -27,7 +27,7 @@ app.get('/bmi', (req: Request, res: Response) => {
   });
 });
 
-app.post('/exercises', (req: { body: { daily_exercises: any; target: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): any; new(): any; }; }; json: (arg0: ExerciseResult) => any; }) => {
+app.post('/exercises', (req: Request, res: Response)  => {
   const { daily_exercises, target } = req.body;
 
   if (!daily_exercises || target === undefined) {
@@ -45,7 +45,7 @@ app.post('/exercises', (req: { body: { daily_exercises: any; target: any; }; }, 
   try {
       const result = calculateExercises(daily_exercises, target);
       return res.json(result);
-  } catch (error) {
+  } catch {
       return res.status(500).json({ error: 'Something went wrong' });
   }
 });
