@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
-app.get('/api/ping',(req, res) => {
+app.get('/api/ping',(_req, res) => {
     console.log('Ping request received');
     res.send('Pong');
 });
