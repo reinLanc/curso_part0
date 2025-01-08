@@ -39,15 +39,3 @@ export const calculateExercises = (dailyHours: number[], target: number): Exerci
     average
   };
 };
-
-// const args = process.argv.slice(2);
-// const targetArg = args[0];
-// const dailyHoursArgs = args.slice(1);
-
-// if (targetArg === '' || dailyHoursArgs.some(arg => arg === '' || isNaN(Number(arg)))) {
-//   console.log('please introduce a valid value for target and hours.');
-// } else {
-//   const dailyHours = dailyHoursArgs.map(Number);
-//   const target = Number(targetArg);
-//   console.log(calculateExercises(dailyHours, target));
-// }
