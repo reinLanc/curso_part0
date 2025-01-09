@@ -21,6 +21,7 @@ const parsePatients = (data: any[]): Patient[] => {
     return data.map((patient) => ({
         ...patient,
         gender: parseGender(patient.gender),
+        entries: patient.entries || []
     }));
 };
 
@@ -49,6 +50,7 @@ const toNewPatient = (object: any): NewPatient => {
         ssn: object.ssn,
         gender: object.gender,
         occupation: object.occupation,
+        entries: object.entries || []
     };
 };
 
@@ -57,12 +59,13 @@ const getPatients = (): Patient[] => {
 };
 
 const getNonSensitivePatients = (): NonSensitivePatient[] => {
-    return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+    return patients.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
         id,
         name,
         dateOfBirth,
         gender,
         occupation,
+        entries
     }));
 };
 
@@ -76,9 +79,14 @@ const addPatient = (newPatient: NewPatient): Patient => {
     return patient;
 };
 
+const getPatientById = (id:string):Patient | undefined => {
+    return patients.find(patient => patient.id === id);
+};
+
 export default {
     getPatients,
     getNonSensitivePatients,
     addPatient,
     toNewPatient,
+    getPatientById
 };

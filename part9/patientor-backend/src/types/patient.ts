@@ -1,3 +1,5 @@
+import { Entry } from "./entry";
+
 export enum Gender {
     // eslint-disable-next-line @/no-unused-vars
     Male = 'male',
@@ -13,7 +15,8 @@ export interface Patient {
     ssn: string;
     gender: Gender;
     occupation: string;
+    entries: Entry[];
 }
 
-export type NonSensitivePatient = Omit<Patient, 'ssn'>;
+export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 export type NewPatient = Omit<Patient, 'id'>;
