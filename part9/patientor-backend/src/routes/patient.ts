@@ -30,4 +30,23 @@ router.get('/:id', (req, res) => {
     res.json(patient);
 });
 
+router.post('/:id/entries', (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const patient = patientService.getPatientById(id);
+
+        if(!patient) {
+            res.status(404).json({error: 'Patient not fond'});
+            return;
+        }
+
+        const newEntry = patientService.toNewEntry(req.body);
+        const updatedPatient = patientService.addEntryToPatient(id, newEntry);
+        res.json(updatedPatient);
+    } catch (error) {
+        res.status(400).send(error instanceof Error ? error.message : 'Unknown error');
+    }
+});
+
 export default router;

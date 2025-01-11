@@ -1,6 +1,7 @@
 import { v1 as uuid } from 'uuid';
-import patientsRaw from '../data/patients';
+import patientsRaw from '../data/patients-full';
 import { Patient, NonSensitivePatient, NewPatient, Gender } from '../types/patient';
+import { BaseEntry, Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry, HealthCheckRating } from '../types/entry';
 
 const isString = (text: any): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -75,12 +76,98 @@ const addPatient = (newPatient: NewPatient): Patient => {
         id: uuid(),
     };
 
-    patients.push(patient); 
+    patients.push(patient);
     return patient;
 };
 
-const getPatientById = (id:string):Patient | undefined => {
+const getPatientById = (id: string): Patient | undefined => {
     return patients.find(patient => patient.id === id);
+};
+
+const parseDiagnosisCodes = (object: unknown): Array<string> => {
+    if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+        return [] as Array<string>;
+    }
+    return object.diagnosisCodes as Array<string>;
+};
+
+const parseStringField = (field: any, fieldName: string): string => {
+    if (!isString(field)) {
+        throw new Error(`Invalid or missing date: ${fieldName}`);
+    }
+    return field;
+};
+
+const parseDate = (date: any): string => {
+    if (!isString(date) || isNaN(Date.parse(date))) {
+        throw new Error(`Invalid or missing date: ${date}`);
+    }
+    return date;
+};
+
+const parseHealthCheckRating = (rating: any): number => {
+    if (typeof rating !== 'number' || !(rating in HealthCheckRating)) {
+        throw new Error(`Invalid or missing healthCheckRating: ${rating}`);
+    }
+    return rating;
+};
+
+const parseBaseEntry = (entry: any): BaseEntry => ({
+    id: uuid(),
+    description: parseStringField(entry.description, 'description'),
+    date: parseDate(entry.date),
+    specialist: parseStringField(entry.specialist, 'specialist'),
+    diagnosisCodes: parseDiagnosisCodes(entry),
+});
+
+const parseHealthCheckEntry = (entry: any): HealthCheckEntry => ({
+    ...parseBaseEntry(entry),
+    type: 'HealthCheck',
+    healthCheckRating: parseHealthCheckRating(entry.healthCheckRating),
+});
+
+const parseHospitalEntry = (entry: any): HospitalEntry => ({
+    ...parseBaseEntry(entry),
+    type: 'Hospital',
+    discharge: {
+        date: parseDate(entry.discharge?.date),
+        criteria: parseStringField(entry.discharge?.criteria, 'discharge.criteria'),
+    },
+});
+
+const parseOccupationalHealthcareEntry = (entry: any): OccupationalHealthcareEntry => ({
+    ...parseBaseEntry(entry),
+    type: 'OccupationalHealthcare',
+    employerName: parseStringField(entry.employerName, 'employerName'),
+    sickLeave: entry.sickLeave
+        ? {
+            startDate: parseDate(entry.sickLeave.startDate),
+            endDate: parseDate(entry.sickLeave.endDate),
+        }
+        : undefined,
+});
+
+const toNewEntry = (entry: any): Entry => {
+    switch (entry.type) {
+        case 'HealthCheck':
+            return parseHealthCheckEntry(entry);
+        case 'Hospital':
+            return parseHospitalEntry(entry);
+        case 'OccupationalHealthcare':
+            return parseOccupationalHealthcareEntry(entry);
+        default:
+            throw new Error(`Unsupported entry type: ${entry.type}`);
+    }
+};
+
+const addEntryToPatient = (id: string, entry: Entry): Patient | undefined => {
+    const patient = patients.find(p => p.id === id);
+    if (!patient) {
+        return undefined;
+    }
+    const newEntry = { ...entry, id: uuid() };
+    patient.entries.push(newEntry);
+    return patient;
 };
 
 export default {
@@ -88,5 +175,7 @@ export default {
     getNonSensitivePatients,
     addPatient,
     toNewPatient,
-    getPatientById
+    getPatientById,
+    toNewEntry,
+    addEntryToPatient
 };
