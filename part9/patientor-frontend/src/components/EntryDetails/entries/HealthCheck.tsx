@@ -1,9 +1,8 @@
-import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Favorite, LocalHospital } from "@mui/icons-material";
 import { HealthCheckEntry, HealthCheckRating } from "../../../types";
 
-const HealthCheck: React.FC<{ entry: HealthCheckEntry }> = ({ entry }) => {
+const HealthCheck = ({ entry }: { entry: HealthCheckEntry }) => {
   const healthCheckIcon = (rating: HealthCheckRating) => {
     switch (rating) {
       case HealthCheckRating.Healthy:

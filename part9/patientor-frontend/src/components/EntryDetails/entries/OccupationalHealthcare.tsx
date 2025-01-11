@@ -1,9 +1,8 @@
-import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Work } from "@mui/icons-material";
 import { OccupationalHealthcareEntry } from "../../../types";
 
-const OccupationalHealthcare: React.FC<{ entry: OccupationalHealthcareEntry }> = ({ entry }) => {
+const OccupationalHealthcare = ({ entry }: { entry: OccupationalHealthcareEntry }) => {
   return (
     <Box style={{ border: "1px solid gray", padding: "1em", marginBottom: "1em" }}>
       <Typography variant="h6">
